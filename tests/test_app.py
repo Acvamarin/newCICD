@@ -1,22 +1,19 @@
-import pytest
-from app import app, db, User
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
-@pytest.fixture
-def client():
-    app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    db.create_all()
-    yield app.test_client()
-    db.drop_all()
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///your_database.db'
+db = SQLAlchemy(app)
 
-def test_add_user(client):
-    response = client.post('/users', json={'name': 'John Doe'})
-    assert response.status_code == 201
-    assert response.get_json()['name'] == 'John Doe'
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
 
-def test_get_users(client):
-    client.post('/users', json={'name': 'John Doe'})
-    response = client.get('/users')
-    assert response.status_code == 200
-    assert len(response.get_json()) == 1
+# Определите маршруты для добавления и получения пользователей
+@app.route('/users', methods=['POST'])
+def add_user():
+    # Ваш код для добавления пользователя
 
+@app.route('/users', methods=['GET'])
+def get_users():
+    # Ваш код для получения пользователей
